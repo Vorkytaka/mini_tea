@@ -1,0 +1,59 @@
+name: Validate repository
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - 'packages/*/lib/**/*.dart'
+      - 'packages/*/test/**/*.dart'
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - 'packages/*/lib/**/*.dart'
+      - 'packages/*/test/**/*.dart'
+
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  unit-test:
+    name: Unit tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Get Flutter version
+        id: version
+        run: |
+          VERSION=$(jq --raw-output '.flutter' .fvmrc)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Clone & Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '${{ steps.version.outputs.version }}'
+          channel: 'stable'
+
+      - run: flutter doctor -v
+
+      - name: Melos setup
+        uses: bluefireteam/melos-action@v3
+
+      - run: melos analyze
+
+      - name: Ensure the Dart code is formatted correctly
+        run: melos format --set-exit-if-changed
+
+      - name: Run Flutter unit tests
+        run: melos test

@@ -1,0 +1,20 @@
+name: mini_tea_flutter
+description: –
+version: 0.0.1
+repository: https://github.com/Vorkytaka/mini_tea/packages/mini_tea_flutter
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.0.0
+  mini_tea: ^0.0.1
+  provider: ^5.0.0
+  rxdart: ^0.27.0
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+  flutter_test:
+    sdk: flutter
