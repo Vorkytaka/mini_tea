@@ -40,7 +40,7 @@ final class _FeatureImpl<State, Msg, Effect>
   @override
   void accept(Msg message) {
     final (newState, effects) = _update(_stateSubject.value, message);
-    if (newState != null) {
+    if (newState != null && _stateSubject.value != newState) {
       _stateSubject.add(newState);
     }
     if (effects.isNotEmpty) {
