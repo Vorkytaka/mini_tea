@@ -1,52 +1,100 @@
 # Mini TEA
 
-Dart/Flutter reactive and functional state manager inspired by The Elm Architecture with respect to the Flutter.
-The main idea is to separate pure business logic from side effects.
+> :warning: This package is under active development and may (and probably will) change in the future.
+
+Mini TEA is a reactive and functional state management library for Dart and Flutter, inspired by The Elm Architecture (TEA) and tailored specifically for the Flutter framework. It emphasizes the separation of pure business logic from side effects, promoting clean, testable, and maintainable code.
+
+## Naming
+
+The world of architecture has some serious naming issues.
+Often people call the same things by different names, and sometimes they rearrange them, making the confusion even worse.
+Here we provide a glossary of basic terms with names you may have heard with other approaches.
+
+- __Feature__ – self-contained module with its own state. Also known as Runtime, Store.
+- __State__ – current state of the Feature. Single source of truth. Also known as Model.
+- __Update__ – pure function that transitions the state based on incoming messages. Also known as Reducer.
+- __Effect Handler__ – manages the execution of side effects triggered by the update function. Mistakenly may be known as Middleware.
+- __View__ – Flutter widget that consumes the state and dispatches messages to the update function.
+- __Message__ (Msg) – a message that triggers a state transition. Also known as Action, Event.
+- __Effect__ – a side effect triggered by the update function. Also known as Command.
 
 ## Main Features
 
-- __Unidirectional data flow__ – all data flows from the state to the view and back.
-- __Pure logic__ – base idea of TEA is that our business logic can and _must_ be pure.
-- __Explicit side effects__ – all side effects live in specific places called `EffectHandler`.
-- __Everything is a data__ – every intention in our architecture is a data.
+- __Unidirectional Data Flow__: Ensures data flows in a single direction, simplifying state management and reducing potential bugs.
+- __Pure Business Logic__: Keeps the core business logic pure and free from side effects, enhancing predictability and ease of testing.
+- __Explicit Side Effects__: Manages side effects explicitly through dedicated constructs called Effect Handlers.
+- __Everything is Data__: Treats all intentions and actions within the architecture as data, leading to a consistent and transparent codebase.
 
-### Unidirectional data flow
+---
 
-The main idea of UDF is that current step of flow cannot affect previous steps.
-So, intentions, like click on the button, just start some process, that will be go through the flow in just one direction.
+### Unidirectional Data Flow
 
-Here, with mini_tea, we have two UDF at the same time:
-1. From View to Feature and backward. Just like any other popular UDF architecture that you saw.
-2. From Update to the Effect Handler.
+The concept of Unidirectional Data Flow (UDF) is central to Mini TEA. It means that data moves in a single direction through the application, ensuring that the current processing step cannot affect previous ones. When a user interacts with the app (like tapping a button), it initiates a process that flows in one direction, simplifying state transitions and reducing unintended side effects.
 
-### Pure logic
+In Mini TEA, there are two simultaneous unidirectional data flows:
+1. From __View__ to __Feature__ and back: User actions in the view generate messages that are processed by the feature logic, updating the state, which in turn updates the view. This should sound familiar if you've worked with UDF architectures before.
+2. From __Update__ to __Effect Handler__ and back: The update function processes messages and may return effects, which are then handled by the Effect Handlers in a unidirectional manner.
 
-The update function should be pure and should not have any side effects.
-At the end our update function will be just finite-state machine, that will update the state based on the incoming message.
-But we all know that world around us is not pure. We can have side effects.
-To handle them our update function can also return collection of effects, that should be handled.
+---
 
-### Explicit side effects
+### Pure Business Logic
 
-So, where we handle side effects? We have a special place called `EffectHandler`.
-This is just an interface, that can do any dirty job and emit new messages to the update.
+At the heart of Mini TEA is the update function, a pure function responsible for state transitions:
+- As an input it receives the current state and an incoming message (for example tap on the button).
+- Then it determines the next state based solely on the input, without producing side effects.
+- At the end returns the new state and a list of effects (if any) to be executed separately.
 
-### Everything is a data
+By keeping the update function pure, we achieve:
+- __Predictability__: The same inputs will always produce the same outputs.
+- __Testability__: Pure functions are straightforward to unit test without mocking dependencies.
+
+However, side effects (like API calls or database operations) are necessary in real applications. Instead of including them in the update function, Mini TEA handles side effects by returning a collection of effects to be processed elsewhere.
+
+---
+
+### Explicit Side Effects
+
+Side effects are managed explicitly through the Effect Handler: An interface dedicated to executing side effects generated by the update function.
+
+In classes that implement this interface we can contain all the dirty logic - for example API calls, databases, stream subscriptions, etc.
+It can also contain implicit logic that you don't want to keep in the business logic.
+
+This explicit management ensures side effects are isolated from the pure business logic, making the codebase easier to understand and maintain.
+
+---
+
+### Everything is Data
 
 Just like Flutter with our favorite "Everything is a widget", our idea is to make things similar and consistent.
 And just like "Everything is a widget" our idea of "Everything is a data" does not literally mean that everything is a data.
-But any intention in our architecture is a data.
+But all __intentions__ is.
 
-## Core concept
+- __Clarity__: Intentions are explicitly modeled, making it clear what actions are possible and how they affect the state.
+- __Consistency__: Handling events and state changes in a uniform way simplifies the architecture.
+- __Immutability__: Encourages the use of immutable data structures, enhancing reliability and reducing bugs.
 
-TEA is a pattern that helps you to write clean, testable and maintainable code.
-It is a set of tools that help you to separate pure business logic from side effects.
+---
 
-There is a three main parts of the architecture:
+## Benefits of Using Mini TEA
 
-- __State__: the current state of the feature.
-- __Update__: a pure function that updates the state in response to a messages.
-- __Effect Handler__: a class that handles side effects triggered during the update.
+- __Improved Testability__: Pure functions and explicit side effect management simplify unit testing.
+- __Maintainability__: Clear separation of concerns reduces complexity and makes the codebase easier to understand and modify.
+- __Consistency__: A uniform approach to handling state and effects ensures a cohesive codebase.
 
-So, in this case, our business logic is easy to read, understand and test.
-It is abstracted from data and its sources.
+---
+
+## Conclusion
+
+Mini TEA brings the robustness and elegance of The Elm Architecture to Dart and Flutter, promoting an application structure where:
+- Business Logic is pure and easy to test.
+- Side Effects are explicitly handled, reducing potential bugs.
+- State Management is predictable, enhancing developer efficiency.
+
+By treating "Everything as Data" and enforcing unidirectional data flow, Mini TEA simplifies complex applications, making your Flutter development experience more enjoyable and productive.
+
+---
+
+## Helpful
+
+- [Beginning Elm](https://elmprogramming.com) – a great introduction to the Elm language and The Elm Architecture. (Chapters 4 and 5 are very helpful even for Dart)
+- [Dartea](https://github.com/p69/dartea) – another implementation of TEA in Dart.
