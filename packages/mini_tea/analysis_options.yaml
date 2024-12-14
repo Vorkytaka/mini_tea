@@ -119,7 +119,7 @@ linter:
     prefer_single_quotes: true
     prefer_spread_collections: true
     prefer_typing_uninitialized_variables: true
-    prefer_void_to_null: true
+    prefer_void_to_null: false
     provide_deprecation_message: false # Add a message if you have something to say
     prefer_is_not_empty: true
     public_member_api_docs: false

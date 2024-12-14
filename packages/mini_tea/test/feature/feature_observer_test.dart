@@ -25,7 +25,7 @@ void main() {
     });
 
     test('onCreate is called on creation', () {
-      verify(() => observer.onCreate(feature)).called(1);
+      verify(() => observer.onCreate()).called(1);
     });
 
     test('onInit is called during init', () async {

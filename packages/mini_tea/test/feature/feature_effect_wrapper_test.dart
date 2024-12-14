@@ -38,7 +38,7 @@ void main() {
           .thenAnswer((_) => Stream.value(leftEffect));
       when(() => mockFeature.initialEffects).thenReturn(const []);
 
-      final wrapper = mockFeature.wrap<LeftEffect>(mockHandler);
+      final wrapper = mockFeature.wrapEffects<LeftEffect>(mockHandler);
       wrapper.init();
       await Future.value();
 
@@ -55,7 +55,7 @@ void main() {
           .thenAnswer((_) => Stream.value(rightEffect));
       when(() => mockFeature.initialEffects).thenReturn(const []);
 
-      final wrapper = mockFeature.wrap<LeftEffect>(mockHandler);
+      final wrapper = mockFeature.wrapEffects<LeftEffect>(mockHandler);
       wrapper.init();
       await Future.value();
 
@@ -74,8 +74,8 @@ void main() {
       when(() => mockFeature.initialEffects).thenReturn(const []);
 
       final wrapper = mockFeature
-          .wrap<LeftEffect>(mockHandler1)
-          .wrap<LeftEffect>(mockHandler2);
+          .wrapEffects<LeftEffect>(mockHandler1)
+          .wrapEffects<LeftEffect>(mockHandler2);
       wrapper.init();
       await Future.value();
 
@@ -91,7 +91,7 @@ void main() {
       when(() => mockFeature.dispose()).thenAnswer((_) => Future.value());
       when(() => mockHandler.dispose()).thenAnswer((_) => Future.value());
 
-      final wrapper = mockFeature.wrap(mockHandler);
+      final wrapper = mockFeature.wrapEffects(mockHandler);
       await wrapper.dispose();
 
       verify(() => mockHandler.dispose()).called(1);
