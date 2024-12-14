@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:mini_tea/feature.dart';
 import 'package:test/test.dart';
 
@@ -23,6 +24,7 @@ import 'package:test/test.dart';
 ///   expectedEffects: [MyEffect.doSomething()],
 /// );
 /// ```
+@experimental
 extension UpdateTest<State, Msg, Effect> on Update<State, Msg, Effect> {
   /// Tests the behavior of an [Update] function by verifying the resulting
   /// state and effects.
@@ -65,6 +67,7 @@ extension UpdateTest<State, Msg, Effect> on Update<State, Msg, Effect> {
 ///   expectedEffects: [MyEffect.doSomething()],
 /// );
 /// ```
+@experimental
 extension IUpdateTest<State, Msg, Effect> on IUpdate<State, Msg, Effect> {
   /// Tests the behavior of an [IUpdate] implementation by verifying the resulting
   /// state and effects.

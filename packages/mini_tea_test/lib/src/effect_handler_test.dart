@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:mini_tea/feature.dart';
 import 'package:test/test.dart';
 
@@ -19,6 +20,7 @@ import 'package:test/test.dart';
 ///   expectedMessages: [MyMsg.success(), MyMsg.done()],
 /// );
 /// ```
+@experimental
 extension EffectHandlerTests<Effect, Msg> on EffectHandler<Effect, Msg> {
   /// Tests the behavior of the [EffectHandler] by verifying
   /// the messages it emits in response to the given [effect].
