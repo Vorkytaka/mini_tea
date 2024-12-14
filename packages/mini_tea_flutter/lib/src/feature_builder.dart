@@ -5,12 +5,33 @@ import 'package:mini_tea/feature.dart';
 import 'feature_listener.dart';
 import 'feature_provider.dart';
 
+/// Signature for the `builder` function which takes the `BuildContext` and
+/// [state] and is responsible for returning a widget which is to be rendered.
 @experimental
 typedef FeatureWidgetBuilder<S> = Widget Function(
   BuildContext context,
   S state,
 );
 
+/// A widget that rebuilds its child when the state of a [Feature] changes.
+///
+/// [FeatureBuilder] listens to the state stream of a [Feature] and rebuilds
+/// its child widget using a provided [builder] whenever the state changes.
+///
+/// ### Features:
+/// - Listens for state changes in the associated [Feature].
+/// - Optionally filters rebuilds using a [buildWhen] condition.
+/// - Supports injection of a specific [Feature] instance or resolves it from the widget tree.
+///
+/// ### Usage:
+///
+/// ```dart
+/// FeatureBuilder<MyFeature, MyState, MyMessage, MyEffect>(
+///   builder: (context, state) {
+///     return Text('Current state: ${state.value}');
+///   },
+/// );
+/// ```
 @experimental
 class FeatureBuilder<F extends Feature<S, M, E>, S, M, E>
     extends StatefulWidget {
