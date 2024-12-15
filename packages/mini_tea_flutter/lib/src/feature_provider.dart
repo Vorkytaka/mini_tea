@@ -14,8 +14,7 @@ import 'package:provider/provider.dart';
 /// - [E]: The type of effects emitted by the feature.
 /// ```
 @experimental
-typedef CreateFeature<F extends Feature> = F Function(
-    BuildContext context);
+typedef CreateFeature<F extends Feature> = F Function(BuildContext context);
 
 /// A provider widget for managing and exposing a [Feature] to the widget tree.
 ///
@@ -47,8 +46,7 @@ typedef CreateFeature<F extends Feature> = F Function(
 /// - [M]: The type of messages handled by the feature.
 /// - [E]: The type of effects emitted by the feature.
 @experimental
-class FeatureProvider<F extends Feature>
-    extends StatelessWidget {
+class FeatureProvider<F extends Feature> extends StatelessWidget {
   /// An existing [Feature] instance to be provided.
   final F? _value;
 

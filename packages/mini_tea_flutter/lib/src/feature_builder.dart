@@ -79,8 +79,7 @@ class _FeatureBuilderState<F extends Feature<S, dynamic, dynamic>, S>
   @override
   void didUpdateWidget(covariant FeatureBuilder<F, S> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final oldFeature =
-        oldWidget.feature ?? FeatureProvider.of<F>(context);
+    final oldFeature = oldWidget.feature ?? FeatureProvider.of<F>(context);
     final feature = widget.feature ?? oldFeature;
     if (oldFeature != feature) {
       _feature = feature;
