@@ -19,6 +19,8 @@ You can read more about this ideas [here](https://github.com/Vorkytaka/mini_tea/
 
 This is your business logic. It must be __pure__ function.
 
+Think about it as a state machine of business logic.
+
 ```dart
 Next<State, Effect> update(State state, Msg message) {
   switch(message) {
