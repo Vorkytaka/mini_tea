@@ -1,6 +1,6 @@
 # Mini TEA
 
-> :warning: This package is under active development and may (and probably will) change in the future.
+> ⚠️ This package is under active development and may (and probably will) change in the future.
 
 Mini TEA is a reactive and functional state management library for Dart and Flutter, inspired by The Elm Architecture (TEA) and tailored specifically for the Flutter framework. It emphasizes the separation of pure business logic from side effects, promoting clean, testable, and maintainable code.
 
