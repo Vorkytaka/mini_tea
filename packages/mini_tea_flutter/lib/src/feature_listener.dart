@@ -41,7 +41,7 @@ typedef FeatureStateCondition<S> = bool Function(S previous, S current);
 /// );
 /// ```
 @experimental
-class FeatureListener<F extends Feature<S, M, E>, S, M, E>
+class FeatureListener<F extends Feature<S, dynamic, dynamic>, S>
     extends StatefulWidget {
   /// The callback to be invoked when the state changes.
   final FeatureWidgetListener<S> listener;
@@ -75,11 +75,11 @@ class FeatureListener<F extends Feature<S, M, E>, S, M, E>
   });
 
   @override
-  State<StatefulWidget> createState() => _FeatureListenerState<F, S, M, E>();
+  State<StatefulWidget> createState() => _FeatureListenerState<F, S>();
 }
 
-class _FeatureListenerState<F extends Feature<S, M, E>, S, M, E>
-    extends State<FeatureListener<F, S, M, E>> {
+class _FeatureListenerState<F extends Feature<S, dynamic, dynamic>, S>
+    extends State<FeatureListener<F, S>> {
   late F _feature;
   late S _previousState;
   StreamSubscription? _subscription;
@@ -107,7 +107,7 @@ class _FeatureListenerState<F extends Feature<S, M, E>, S, M, E>
   }
 
   @override
-  void didUpdateWidget(covariant FeatureListener<F, S, M, E> oldWidget) {
+  void didUpdateWidget(covariant FeatureListener<F, S> oldWidget) {
     super.didUpdateWidget(oldWidget);
     final oldFeature = oldWidget.feature ?? context.read<F>();
     final feature = widget.feature ?? oldFeature;

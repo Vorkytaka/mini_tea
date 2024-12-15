@@ -33,7 +33,7 @@ typedef FeatureWidgetBuilder<S> = Widget Function(
 /// );
 /// ```
 @experimental
-class FeatureBuilder<F extends Feature<S, M, E>, S, M, E>
+class FeatureBuilder<F extends Feature<S, dynamic, dynamic>, S>
     extends StatefulWidget {
   final FeatureWidgetBuilder<S> builder;
   final F? feature;
@@ -48,12 +48,12 @@ class FeatureBuilder<F extends Feature<S, M, E>, S, M, E>
 
   @override
   State<StatefulWidget> createState() {
-    return _FeatureBuilderState<F, S, M, E>();
+    return _FeatureBuilderState<F, S>();
   }
 }
 
-class _FeatureBuilderState<F extends Feature<S, M, E>, S, M, E>
-    extends State<FeatureBuilder<F, S, M, E>> {
+class _FeatureBuilderState<F extends Feature<S, dynamic, dynamic>, S>
+    extends State<FeatureBuilder<F, S>> {
   late F _feature;
   late S _state;
 
@@ -61,7 +61,7 @@ class _FeatureBuilderState<F extends Feature<S, M, E>, S, M, E>
   void initState() {
     super.initState();
 
-    _feature = widget.feature ?? FeatureProvider.of<F, S, M, E>(context);
+    _feature = widget.feature ?? FeatureProvider.of<F>(context);
     _state = _feature.state;
   }
 
@@ -69,7 +69,7 @@ class _FeatureBuilderState<F extends Feature<S, M, E>, S, M, E>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final feature = widget.feature ?? FeatureProvider.of<F, S, M, E>(context);
+    final feature = widget.feature ?? FeatureProvider.of<F>(context);
     if (_feature != feature) {
       _feature = feature;
       _state = _feature.state;
@@ -77,10 +77,10 @@ class _FeatureBuilderState<F extends Feature<S, M, E>, S, M, E>
   }
 
   @override
-  void didUpdateWidget(covariant FeatureBuilder<F, S, M, E> oldWidget) {
+  void didUpdateWidget(covariant FeatureBuilder<F, S> oldWidget) {
     super.didUpdateWidget(oldWidget);
     final oldFeature =
-        oldWidget.feature ?? FeatureProvider.of<F, S, M, E>(context);
+        oldWidget.feature ?? FeatureProvider.of<F>(context);
     final feature = widget.feature ?? oldFeature;
     if (oldFeature != feature) {
       _feature = feature;
@@ -90,7 +90,7 @@ class _FeatureBuilderState<F extends Feature<S, M, E>, S, M, E>
 
   @override
   Widget build(BuildContext context) {
-    return FeatureListener<F, S, M, E>(
+    return FeatureListener<F, S>(
       listener: (context, state) => setState(() => _state = state),
       listenWhen: widget.buildWhen,
       child: widget.builder(context, _state),

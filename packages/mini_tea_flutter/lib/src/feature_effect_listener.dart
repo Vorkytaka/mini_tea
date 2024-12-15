@@ -30,7 +30,7 @@ import 'feature_listener.dart';
 /// );
 /// ```
 @experimental
-class FeatureEffectListener<F extends Feature<S, M, E>, S, M, E,
+class FeatureEffectListener<F extends Feature<dynamic, dynamic, E>, E,
     Effect extends E> extends StatefulWidget {
   /// A callback invoked when an effect of type [Effect] is emitted.
   final FeatureWidgetListener<Effect> listener;
@@ -55,12 +55,12 @@ class FeatureEffectListener<F extends Feature<S, M, E>, S, M, E,
 
   @override
   State<StatefulWidget> createState() {
-    return _FeatureEffectListener<F, S, M, E, Effect>();
+    return _FeatureEffectListener<F, E, Effect>();
   }
 }
 
-class _FeatureEffectListener<F extends Feature<S, M, E>, S, M, E,
-    Effect extends E> extends State<FeatureEffectListener<F, S, M, E, Effect>> {
+class _FeatureEffectListener<F extends Feature<dynamic, dynamic, E>, E,
+    Effect extends E> extends State<FeatureEffectListener<F, E, Effect>> {
   late F _feature;
   StreamSubscription? _subscription;
 
@@ -86,7 +86,7 @@ class _FeatureEffectListener<F extends Feature<S, M, E>, S, M, E,
 
   @override
   void didUpdateWidget(
-    covariant FeatureEffectListener<F, S, M, E, Effect> oldWidget,
+    covariant FeatureEffectListener<F, E, Effect> oldWidget,
   ) {
     super.didUpdateWidget(oldWidget);
 

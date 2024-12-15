@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 /// - [E]: The type of effects emitted by the feature.
 /// ```
 @experimental
-typedef CreateFeature<F extends Feature<S, M, E>, S, M, E> = F Function(
+typedef CreateFeature<F extends Feature> = F Function(
     BuildContext context);
 
 /// A provider widget for managing and exposing a [Feature] to the widget tree.
@@ -47,13 +47,13 @@ typedef CreateFeature<F extends Feature<S, M, E>, S, M, E> = F Function(
 /// - [M]: The type of messages handled by the feature.
 /// - [E]: The type of effects emitted by the feature.
 @experimental
-class FeatureProvider<F extends Feature<S, M, E>, S, M, E>
+class FeatureProvider<F extends Feature>
     extends StatelessWidget {
   /// An existing [Feature] instance to be provided.
   final F? _value;
 
   /// A factory function to create a new [Feature] instance.
-  final CreateFeature<F, S, M, E>? _create;
+  final CreateFeature<F>? _create;
 
   /// The widget subtree that will have access to the [Feature].
   final Widget child;
@@ -68,7 +68,7 @@ class FeatureProvider<F extends Feature<S, M, E>, S, M, E>
   /// - [child]: The widget subtree that will have access to the [Feature].
   /// - [lazy]: If `true`, delays creation until first accessed.
   const FeatureProvider.create({
-    required CreateFeature<F, S, M, E> create,
+    required CreateFeature<F> create,
     required this.child,
     this.lazy = false,
     super.key,
@@ -119,7 +119,7 @@ class FeatureProvider<F extends Feature<S, M, E>, S, M, E>
   /// - [listen]: Whether to listen for changes in the [Feature]. Defaults to `false`.
   ///
   /// Throws a [FlutterError] if no [Feature] of the required type is found.
-  static F of<F extends Feature<S, M, E>, S, M, E>(
+  static F of<F extends Feature>(
     BuildContext context, {
     bool listen = false,
   }) {
