@@ -1,6 +1,6 @@
 # Mini TEA for Flutter
 
-> :warning: This package is under active development and may (and probably will) change in the future.
+> ⚠️ This package is under active development and may (and probably will) change in the future.
 
 This package contains widgets for [Mini TEA](https://github.com/Vorkytaka/mini_tea).
 
@@ -10,7 +10,7 @@ Learn more about Mini TEA [here](https://github.com/Vorkytaka/mini_tea/blob/mast
 
 ---
 
-> :information_source: Currently this package just copy-pasted from `flutter_bloc`
+> ⚠️ Currently this package just copy-pasted from `flutter_bloc`
 > Because we really love how does bloc integrates with flutter.
 
 ---
