@@ -2,44 +2,60 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 
-import '../feature/feature.dart';
+import '../feature/core/feature.dart';
 
-/// An [EffectHandler] that wraps another effect handler with a debounce mechanism.
+/// An [EffectHandler] implementation that adds a debounce mechanism to effect handling.
 ///
-/// Debouncing ensures that effect handling is postponed until a specified
-/// duration has elapsed since the last invocation. This is useful for scenarios
-/// where effects are triggered in quick succession, and only the most recent
-/// effect needs to be processed after a delay.
+/// Debouncing ensures that effect handling is postponed until a specified [duration]
+/// has elapsed since the last effect invocation. If new effects are scheduled during
+/// the delay, the previous effect is canceled, and only the most recent effect is processed.
+///
+/// This is particularly useful in scenarios where effects are triggered in rapid succession,
+/// such as handling user input or network requests, and you want to limit the frequency
+/// of effect processing.
+///
+/// ### Example:
+/// ```dart
+/// final debounceHandler = DebounceEffectHandler(
+///   duration: const Duration(milliseconds: 300),
+///   handler: myEffectHandler,
+/// );
+/// ```
 @experimental
 final class DebounceEffectHandler<Effect, Msg>
     implements EffectHandler<Effect, Msg>, Disposable {
-  /// The duration for which effect handling should be delayed.
+  /// The duration to wait before handling the effect.
+  ///
+  /// This defines the debounce interval. Any effect scheduled within this
+  /// interval cancels the previous one, ensuring only the latest effect is processed.
   final Duration duration;
 
-  /// The underlying effect handler that processes the effects.
+  /// The underlying effect handler that processes the effects after the debounce interval.
+  ///
+  /// This handler is invoked with the debounced effect once the delay has elapsed.
   final EffectHandler<Effect, Msg> _handler;
 
+  /// The timer used to manage the debounce delay.
   Timer? _timer;
 
-  /// Creates a [DebounceEffectHandler] with the given debounce duration and effect handler.
+  /// Creates a new [DebounceEffectHandler].
   ///
-  /// Parameters:
-  /// - [duration]: The amount of time to wait before invoking the effect handler.
-  /// - [handler]: The effect handler to be wrapped with debouncing logic.
+  /// - [duration]: The debounce interval. Effects scheduled within this time frame
+  ///   cancel previously scheduled effects.
+  /// - [handler]: The actual effect handler to invoke after the debounce delay.
   DebounceEffectHandler({
     required this.duration,
     required EffectHandler<Effect, Msg> handler,
   }) : _handler = handler;
 
-  /// Schedules the handling of an effect by delaying it according to [duration].
+  /// Handles an effect with debounce logic.
   ///
-  /// If there is an existing scheduled effect, it will be cancelled and replaced
-  /// with the new effect. This ensures that only the most recent effect is handled
-  /// after the delay.
+  /// If an effect is already scheduled for handling, it will be canceled, and the
+  /// new effect will replace it. After the debounce [duration], the latest effect
+  /// is processed using the wrapped [_handler].
   ///
-  /// Parameters:
-  /// - [effect]: The effect to be handled.
-  /// - [emit]: A function to emit messages as a result of handling the effect.
+  /// - [effect]: The effect to be processed after the debounce delay.
+  /// - [emit]: A function to emit messages resulting from the effect.
   @override
   FutureOr<void> call(
     Effect effect,
@@ -51,13 +67,16 @@ final class DebounceEffectHandler<Effect, Msg>
 
   /// Cancels any currently scheduled effect handling.
   ///
-  /// This is typically used to prevent the handling of a previously scheduled effect
-  /// if a new effect has been scheduled for handling or if effect handling is no longer required.
+  /// This is useful for cleaning up resources or if no further effect handling
+  /// is required.
   @override
   Future<void> dispose() async {
     _cancelTimer();
   }
 
+  /// Cancels the current timer and clears its reference.
+  ///
+  /// Called internally to ensure only one effect is scheduled at a time.
   void _cancelTimer() {
     _timer?.cancel();
     _timer = null;
