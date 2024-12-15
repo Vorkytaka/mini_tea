@@ -21,6 +21,12 @@ This is your business logic. It must be __pure__ function.
 
 Think about it as a state machine of business logic.
 
+This function must return record with optional state and optional effects.
+If state is not null, it will be updated in the Feature.
+And if effects is not empty, it will be executed in the Effect Handler.
+
+To make it easier, you can use `next` helper function, it will be inlined at the compilation.
+
 ```dart
 Next<State, Effect> update(State state, Msg message) {
   switch(message) {
@@ -32,6 +38,8 @@ Next<State, Effect> update(State state, Msg message) {
   }
 }
 ```
+
+It's completely fine to return only state, or only effects.
 
 ### Create an Effect Handler
 
