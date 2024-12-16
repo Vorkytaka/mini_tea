@@ -1,7 +1,15 @@
 name: mini_tea_test
-description: –
+description: An extension to make mini_tea test easier.
 version: 0.1.0
-repository: https://github.com/Vorkytaka/mini_tea/packages/mini_tea_test
+
+repository: https://github.com/Vorkytaka/mini_tea/tree/master/packages/mini_tea_test
+issue_tracker: https://github.com/Vorkytaka/mini_tea/issues
+homepage: https://github.com/Vorkytaka/mini_tea
+topics:
+  - state-management
+  - architecture
+  - unidirectional-data-flow
+  - mvi
 
 environment:
   sdk: ^3.0.0
