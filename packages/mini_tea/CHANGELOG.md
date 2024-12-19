@@ -1,3 +1,7 @@
+## NEXT
+
+- Add `SequentialEffectHandler` to the export
+
 ## 0.1.0
 
 - Add docs
