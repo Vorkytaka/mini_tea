@@ -1,3 +1,7 @@
+## 0.2.0
+
+- `FeatureProvider.create` now initialize feature when create it
+
 ## 0.1.0
 
 - Add docs
