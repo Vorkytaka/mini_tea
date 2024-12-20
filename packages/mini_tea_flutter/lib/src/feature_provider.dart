@@ -103,7 +103,7 @@ class FeatureProvider<F extends Feature> extends StatelessWidget {
             child: child,
           )
         : InheritedProvider<F>(
-            create: _create,
+            create: _createAndInit,
             startListening: _startListening,
             dispose: (_, feature) => feature.dispose(),
             lazy: lazy,
@@ -145,5 +145,13 @@ class FeatureProvider<F extends Feature> extends StatelessWidget {
     return value.stateStream
         .listen((_) => element.markNeedsNotifyDependents())
         .cancel;
+  }
+
+  F _createAndInit(BuildContext context) {
+    assert(_create != null);
+
+    final instance = _create!.call(context);
+    instance.init();
+    return instance;
   }
 }
