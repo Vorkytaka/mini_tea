@@ -26,7 +26,7 @@ final class _FeatureImpl<State, Msg, Effect>
 
   final BehaviorSubject<State> _stateSubject;
   final _effectsController = StreamController<Effect>.broadcast();
-  final _handlersSubscriptions = CompositeSubscription();
+  StreamSubscription? _effectSubscription;
 
   @override
   Stream<State> get stateStream => _stateSubject.stream;
@@ -67,13 +67,13 @@ final class _FeatureImpl<State, Msg, Effect>
         .whereType<Disposable>()
         .map((disposable) => disposable.dispose()));
 
-    await _handlersSubscriptions.clear();
+    await _effectSubscription?.cancel();
     await _stateSubject.close();
     await _effectsController.close();
   }
 
   void _listenForEffects() {
-    effects.listen(_handleEffect).addTo(_handlersSubscriptions);
+    _effectSubscription = effects.listen(_handleEffect);
   }
 
   /// Send [effect] to each effect handler in this feature.
