@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Fixes for pub.dev
+
 ## 0.1.0
 
 - Add `EffectHandlerTests` instead of `Sync` and `Async`
