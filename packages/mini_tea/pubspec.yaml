@@ -1,6 +1,6 @@
 name: mini_tea
 description: A clean and predictable state management solution inspired by The Elm Architecture.
-version: 0.1.0
+version: 0.1.1
 
 repository: https://github.com/Vorkytaka/mini_tea/tree/master/packages/mini_tea
 issue_tracker: https://github.com/Vorkytaka/mini_tea/issues
