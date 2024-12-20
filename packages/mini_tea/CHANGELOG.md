@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Fix repository link in `pubspec.yaml` (🫠)
+
 ## 0.1.1
 
 - Add `SequentialEffectHandler` to the export
