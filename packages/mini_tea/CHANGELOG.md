@@ -1,6 +1,7 @@
 ## NEXT
 
 - Add `SequentialEffectHandler` to the export
+- Fixes for Pub.dev
 
 ## 0.1.0
 
