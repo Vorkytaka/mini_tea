@@ -1,6 +1,6 @@
 name: mini_tea_test
 description: A package to make feature testing in mini_tea easier and more enjoyable.
-version: 0.1.1
+version: 0.2.0
 
 repository: https://github.com/Vorkytaka/mini_tea/tree/master/packages/mini_tea_test
 issue_tracker: https://github.com/Vorkytaka/mini_tea/issues
