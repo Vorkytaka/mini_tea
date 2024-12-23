@@ -44,7 +44,11 @@ extension UpdateTest<State, Msg, Effect> on Update<State, Msg, Effect> {
   }) {
     final (actualState, actualEffects) = this(state, message);
     expect(actualState, expectedState);
-    expect(actualEffects, containsAllInOrder(expectedEffects));
+    if (expectedEffects.isEmpty) {
+      expect(actualEffects, isEmpty);
+    } else {
+      expect(actualEffects, containsAllInOrder(expectedEffects));
+    }
   }
 }
 

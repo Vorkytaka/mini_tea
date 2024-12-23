@@ -34,11 +34,11 @@ extension EffectHandlerTests<Effect, Msg> on EffectHandler<Effect, Msg> {
   /// [expectedMessages] is not provided, it asserts that no messages are emitted.
   Future<void> test({
     required Effect effect,
-    Iterable<Msg>? expectedMessages,
+    Iterable<Msg> expectedMessages = const [],
   }) async {
     final actual = <Msg>[];
     await call(effect, actual.add);
-    if (expectedMessages == null) {
+    if (expectedMessages.isEmpty) {
       expect(actual, isEmpty);
     } else {
       expect(actual, containsAllInOrder(expectedMessages));
