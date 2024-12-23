@@ -1,4 +1,4 @@
-## NEXT
+## 0.2.0
 
 - Update contract of the `EffectHandlerTest`
 - Fix case when expected effects is empty
