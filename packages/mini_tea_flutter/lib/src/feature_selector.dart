@@ -19,7 +19,7 @@ final class FeatureSelector<F extends Feature<S, dynamic, dynamic>, S, T>
   });
 
   @override
-  State<StatefulWidget> createState() => _FeatureSelectorState();
+  State<StatefulWidget> createState() => _FeatureSelectorState<F, S, T>();
 }
 
 final class _FeatureSelectorState<F extends Feature<S, dynamic, dynamic>, S, T>
