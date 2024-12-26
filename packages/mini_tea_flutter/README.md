@@ -33,8 +33,8 @@ class CounterApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: FeatureProvider.create(
-          create: (context) => CounterFeature(),
-          child: CounterPage(),
+        create: (context) => CounterFeature(),
+        child: CounterPage(),
       ),
     );
   }
@@ -84,6 +84,24 @@ class CounterPage extends StatelessWidget {
 }
 ```
 
+#### Selector
+
+You can use `FeatureSelector` to build a widget based on a `Feature` instance and a part of its state.
+
+```dart
+class CounterPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FeatureSelector<CounterFeature, CounterState, int>(
+      selector: (state) => state.value,
+      builder: (context, value) => CounterWidget(value),
+    );
+  }
+}
+```
+
+This widget will be rebuilt only when the selected part of the state changes.
+
 #### Effect Listener (single time events)
 
 Some events must happen only once, for example showing a snackbar.
@@ -100,7 +118,7 @@ sealed class UiEffect implements Effect {}
 
 final class ShowSnackbar implements UiEffect {
   final String message;
-  
+
   const ShowSnackbar(this.message);
 }
 
@@ -111,7 +129,7 @@ sealed class AsyncEffect implements Effect {}
 final class LoginEffect implements AsyncEffect {
   final String email;
   final String password;
-  
+
   const LoginEffect(this.email, this.password);
 }
 ```
@@ -123,9 +141,10 @@ class CounterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FeatureEffectListener<CounterFeature, Effect, UiEffect>(
-      listener: (context, effect) => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(effect.message)),
-      ),
+      listener: (context, effect) =>
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(effect.message)),
+          ),
       child: CounterWidget(),
     );
   }
