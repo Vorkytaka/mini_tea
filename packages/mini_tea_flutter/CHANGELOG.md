@@ -1,3 +1,7 @@
+## NEXT
+
+- Add `FeatureSelector` widget
+
 ## 0.2.0
 
 - `FeatureProvider.create` now initialize feature when create it
