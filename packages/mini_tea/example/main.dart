@@ -1,111 +1,136 @@
-import 'dart:math';
+// ignore_for_file: avoid_print
 
 import 'package:mini_tea/feature.dart';
 
-typedef ExampleFeature = Feature<State, Msg, Effect>;
+typedef CounterFeature = Feature<CounterState, CounterMsg, CounterEffect>;
 
 Future<void> main() async {
-  final feature = ExampleFeature(
-    initialState: const State(count: 0),
+  final feature = CounterFeature(
+    initialState: 0,
     update: update,
-    effectHandlers: [ExampleEffectHandler()],
-    // initialEffects: [const GetRandom()], // We can set this initial effect, so our feature will get random number at init
+    effectHandlers: [
+      CounterEffectHandler(storage: MockCounterStorage()),
+    ],
+    initialEffects: [const LoadCounter()],
   );
 
   await feature.init();
 
+  feature.stateStream.listen((state) {
+    print('State: $state');
+  });
+
   feature.accept(const Increment());
   feature.accept(const Decrement());
-  feature.accept(const AskRandom());
-  feature.accept(const Increment());
 }
 
 // Messages
 
-sealed class Msg {}
+sealed class CounterMsg {}
 
-final class Increment implements Msg {
+final class Increment implements CounterMsg {
   const Increment();
 }
 
-final class Decrement implements Msg {
+final class Decrement implements CounterMsg {
   const Decrement();
 }
 
-final class AskRandom implements Msg {
-  const AskRandom();
-}
+final class CounterLoaded implements CounterMsg {
+  final int counter;
 
-final class SetCounter implements Msg {
-  final int value;
-
-  const SetCounter({required this.value});
+  const CounterLoaded(this.counter);
 }
 
 // State
 
-final class State {
-  final int count;
-
-  const State({required this.count});
-
-  State copyWith({
-    int? count,
-  }) =>
-      State(count: count ?? this.count);
-}
+typedef CounterState = int;
 
 // Effects
 
-sealed class Effect {}
+sealed class CounterEffect {}
 
-final class GetRandom implements Effect {
-  final int min;
-  final int max;
+class SaveCounter implements CounterEffect {
+  final int counter;
 
-  const GetRandom({
-    this.min = 0,
-    this.max = 100,
-  });
+  const SaveCounter(this.counter);
+}
+
+class LoadCounter implements CounterEffect {
+  const LoadCounter();
 }
 
 // Update
 
-Next<State, Effect> update(State state, Msg message) {
+Next<CounterState, CounterEffect> update(
+    CounterState state, CounterMsg message) {
   switch (message) {
     case Increment():
-      // When increment just add one and nothing more
-      return next(state: state.copyWith(count: state.count + 1));
+      final newState = state + 1;
+      return next(
+        state: newState,
+        effects: [SaveCounter(newState)],
+      );
     case Decrement():
-      // Same with decrement but subtract one
-      return next(state: state.copyWith(count: state.count - 1));
-    case AskRandom():
-      // When ask for random we do not update state
-      // But send effect to really get random from handler
-      return next(effects: const [GetRandom()]);
-    case SetCounter():
-      // When we get a specific number just set it
-      return next(state: state.copyWith(count: message.value));
+      final newState = state - 1;
+      return next(
+        state: newState,
+        effects: [SaveCounter(newState)],
+      );
+    case CounterLoaded():
+      return next(state: message.counter);
   }
 }
 
 // Effect Handler
 
 // In this class we handle side effects, so our logic is pure
-final class ExampleEffectHandler implements EffectHandler<Effect, Msg> {
-  final _random = Random();
+final class CounterEffectHandler
+    implements EffectHandler<CounterEffect, CounterMsg> {
+  final CounterStorage _storage;
+
+  CounterEffectHandler({
+    required CounterStorage storage,
+  }) : _storage = storage;
 
   @override
-  void call(Effect effect, MsgEmitter<Msg> emit) {
+  Future<void> call(CounterEffect effect, MsgEmitter<CounterMsg> emit) async {
     switch (effect) {
-      case GetRandom():
-        return _getRandom(effect, emit);
+      case SaveCounter():
+        return _save(effect, emit);
+      case LoadCounter():
+        return _load(effect, emit);
     }
   }
 
-  void _getRandom(GetRandom effect, MsgEmitter<Msg> emit) {
-    final num = _random.nextInt(effect.max - effect.min) + effect.min;
-    final msg = SetCounter(value: num);
-    emit(msg);
+  Future<void> _save(SaveCounter effect, MsgEmitter<CounterMsg> emit) async {
+    await _storage.save(effect.counter);
+  }
+
+  Future<void> _load(LoadCounter effect, MsgEmitter<CounterMsg> emit) async {
+    final value = await _storage.load();
+    emit(CounterLoaded(value));
+  }
+}
+
+// Storage
+
+abstract interface class CounterStorage {
+  Future<int> load();
+
+  Future<void> save(int counter);
+}
+
+final class MockCounterStorage implements CounterStorage {
+  int _counter = 0;
+
+  @override
+  Future<int> load() async {
+    return _counter;
+  }
+
+  @override
+  Future<void> save(int counter) async {
+    _counter = counter;
   }
 }
