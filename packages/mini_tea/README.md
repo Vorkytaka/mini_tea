@@ -1,12 +1,12 @@
-# Mini TEA
+# miniTea
 
-![Mini TEA](../../assets/logo.png)
+![miniTea](https://raw.githubusercontent.com/Vorkytaka/mini_tea/refs/heads/mini_tea/readme/assets/logo.png)
 
 > ⚠️ __Under active development__: Things may change as we continue improving!
 
-Mini TEA is a reactive and functional state management library for Dart and Flutter, inspired by The Elm Architecture (TEA) and tailored specifically for the Flutter framework. It emphasizes the separation of pure business logic from side effects, promoting clean, testable, and maintainable code.
+miniTea is a reactive and functional state management library for Dart and Flutter, inspired by The Elm Architecture (TEA) and tailored specifically for the Flutter framework. It emphasizes the separation of pure business logic from side effects, promoting clean, testable, and maintainable code.
 
-## Why Mini TEA?
+## Why miniTea?
 
 - __Unidirectional Data Flow__: Ensures data flows in a single direction, simplifying state management and reducing potential bugs.
 - __Pure Business Logic__: Keeps the core business logic pure and free from side effects, enhancing predictability and ease of testing.
@@ -17,16 +17,22 @@ You can read more about this ideas [here](https://github.com/Vorkytaka/mini_tea/
 
 ## Other packages
 
-- [mini_tea_flutter](https://pub.dev/packages/mini_tea_flutter) – build Flutter applications with Mini TEA.
-- [mini_tea_test](https://pub.dev/packages/mini_tea_test) – test Mini TEA features with ease.
+- [mini_tea_flutter](https://pub.dev/packages/mini_tea_flutter) – build Flutter applications with miniTea.
+- [mini_tea_test](https://pub.dev/packages/mini_tea_test) – test miniTea features with ease.
 
 ## Simple Example
 
-Let's create a simple Counter feature using Mini TEA.
+Let's create a simple Counter feature using miniTea.
 
 ### 1. Define the Models
 
-Messages is some intention around the feature.
+Our state will be an integer, for simplicity.
+
+```dart
+typedef CounterState = int;
+```
+
+Messages represent intentions related to the feature
 It can be a user action like button click, a system event, or any other kind of intention.
 
 In our example we have two messages: `Increment` and `Decrement`.
@@ -37,12 +43,6 @@ sealed abstract class CounterMsg {}
 class Increment extends CounterMsg {}
 
 class Decrement extends CounterMsg {}
-```
-
-Our state will be an integer, for simplicity.
-
-```dart
-typedef CounterState = int;
 ```
 
 ### 2. Define the Update Function
@@ -64,7 +64,7 @@ Next<CounterState, CounterEffect> update(CounterState state, CounterMsg message)
 
 As you can see the update function is a simple switch case that increments or decrements the state based on the incoming message.
 
-> Don't think about `CounterEffect` for now, we will talk about it later.
+> 🚧 You can ignore CounterEffect for now; it will be discussed later.
 
 ### 3. Create a Feature
 
@@ -89,12 +89,12 @@ counterFeature.accept(Increment()); // State becomes `1`
 counterFeature.accept(Decrement()); // State becomes `0`
 ```
 
-Congratulations! You have created your first feature using Mini TEA.
+Congratulations! You have created your first feature using miniTea.
 
 > ℹ️ Note: If you use `mini_tea_flutter` and `FeatureProvider.create`, then you don't need to call `init` manually!
 
 Our `update` function is pure, but in the real world you will need to interact with all the dirty around, like saving data to a database, making an HTTP request, or even navigating to another screen.
-To handle these side effects Mini TEA has the concept of `Effect Handlers`.
+To handle these side effects miniTea has the concept of `Effect Handlers`.
 
 Let's make our example a little more complex by adding ability to save and load the counter state from the storage.
 
@@ -218,19 +218,19 @@ final counterFeature = CounterFeature(
 
 await counterFeature.init(); // Always initialize your feature before using it!
 
-counterFeature.accept(Increment()); // State becomes `1` and save to the storage
-counterFeature.accept(Decrement()); // State becomes `0` and save to the storage
+counterFeature.accept(Increment()); // State becomes `1` and saved to the storage
+counterFeature.accept(Decrement()); // State becomes `0` and saved to the storage
 ```
 
-And that's it! You have created a feature with side effects using Mini TEA. Congratulations! 🎉
+And that's it! You have created a feature with side effects using miniTea. Congratulations! 🎉
+
+## Managing Feature Lifecycle: Initial and Disposable Effects
+
+miniTea allows you to handle specific actions when a feature is initialized or disposed, ensuring clean and predictable behavior throughout its lifecycle.
 
 ### Initial Effects
 
-Sometimes you need to perform some actions when the feature is initialized.
-
-For example, you may want to load the counter value from the storage when the feature is initialized.
-
-To do this you can pass `initialEffects` to the feature.
+You can specify actions to perform when a feature is initialized, such as loading data from storage or making an initial API call. Use the `initialEffects` parameter for this purpose.
 
 ```dart
 final counterFeature = CounterFeature(
@@ -239,18 +239,52 @@ final counterFeature = CounterFeature(
   effectHandlers: [CounterEffectHandler(CounterStorage())],
   initialEffects: [LoadCounter()],
 );
+
+// During initialization:
+await counterFeature.init(); // Triggers the `LoadCounter` effect.
 ```
 
-Now when you call `counterFeature.init()` it will load the counter value from the storage.
-
-What's great about this is that you can see all the side effects in one place and you can easily test them.
+This approach makes it easy to understand what actions will occur when the feature starts by simply looking at the feature's definition.
 
 ### Disposable Effects
 
-Sometimes you need to perform some actions when the feature is disposed.
+To perform actions when a feature is disposed (e.g., closing database connections, stopping streams), you can use either:
+1. The `disposableEffects` parameter in the Feature constructor
+2. The Disposable interface in your EffectHandler. By implementing this interface, you can define a dispose method that miniTea will automatically call.
 
-For example, you may want to close the database connection when the feature is disposed or stop some stream.
+```dart
+final counterFeature = CounterFeature(
+  initialState: 0,
+  update: update,
+  effectHandlers: [CounterEffectHandler(CounterStorage())],
+  disposableEffects: [CloseDatabaseConnection()],
+);
 
-To do this you have two options:
-1. `disposableEffects` argument in the `Feature` constructor. Same as `initialEffects` but will be called when the feature is disposed.
-2. Implement `Disposable` interface in your `EffectHandler` class. In this case, `dispose` method will be called when the feature is disposed.
+// In your effect handler:
+class CounterEffectHandler implements EffectHandler<CounterEffect, CounterMsg>, Disposable {
+  @override
+  Future<void> dispose() async {
+    await _storage.close();
+  }
+}
+```
+
+By combining `initialEffects` and `disposableEffects`, you can manage a feature's entire lifecycle cleanly, ensuring proper resource allocation and cleanup.
+
+## Wrappers
+
+In other state management libraries, we usually inherit from the base class, so we have access to a number of methods for processing.
+For example, [Bloc.onEvent](https://pub.dev/documentation/bloc/latest/bloc/Bloc/onEvent.html) method, with which we can listen to incoming events.
+This is pretty useful for logging, analytics, or any other side effects.
+
+But in miniTea we don't have inheritance, so how can we achieve the same functionality?
+
+With concept of Wrappers.
+
+miniTea already has a few built-in wrappers:
+- `FeatureObserverWrapper` – allows you to observe all incoming messages and state changes. Useful for logging and analytics.
+- `FeatureEffectWrapper` – allows you to process specific effects, instead of all of them.
+
+They all have build on top of the `ProxyFeature` class and have easy to use extension methods.
+
+> 🚧 __Warning__: Wrappers does not have direct access to the update function, so we listen for events through the streams. This means that events will be processed asynchronously.
