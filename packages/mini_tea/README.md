@@ -1,6 +1,6 @@
 # miniTea
 
-![miniTea](https://raw.githubusercontent.com/Vorkytaka/mini_tea/refs/heads/mini_tea/readme/assets/logo.png)
+![miniTea](https://raw.githubusercontent.com/Vorkytaka/mini_tea/refs/heads/master/assets/logo.png)
 
 > ⚠️ __Under active development__: Things may change as we continue improving!
 
