@@ -12,7 +12,6 @@ import 'proxy_feature.dart';
 /// messages, and effects. This is useful for debugging, logging, or analytics.
 ///
 /// ### Hooks:
-/// - [onCreate]: Called when the feature is created. Provides the feature instance.
 /// - [onInit]: Called when the feature is initialized.
 /// - [onDispose]: Called when the feature is disposed.
 /// - [onState]: Called when the feature's state changes.
@@ -37,13 +36,8 @@ import 'proxy_feature.dart';
 ///   }
 /// }
 /// ```
-///
-// TODO(Vorkytaka): Use functions instead of class?
 @experimental
 abstract class FeatureObserver<State, Msg, Effect> {
-  /// Called when the feature is created.
-  void onCreate() {}
-
   /// Called when the feature is initialized.
   void onInit() {}
 
@@ -66,6 +60,21 @@ abstract class FeatureObserver<State, Msg, Effect> {
   void onEffect(Effect effect) {}
 }
 
+/// A function type for handling feature lifecycle events.
+typedef OnInit = void Function();
+
+/// A function type for handling feature disposal events.
+typedef OnDispose = void Function();
+
+/// A function type for handling state changes.
+typedef OnState<State> = void Function(State state);
+
+/// A function type for handling messages.
+typedef OnMsg<Msg> = void Function(Msg message);
+
+/// A function type for handling effects.
+typedef OnEffect<Effect> = void Function(Effect effect);
+
 /// A wrapper for adding observation capabilities to a [Feature].
 ///
 /// [FeatureObserverWrapper] enhances a feature by integrating a [FeatureObserver],
@@ -82,8 +91,11 @@ abstract class FeatureObserver<State, Msg, Effect> {
 @experimental
 final class FeatureObserverWrapper<State, Msg, Effect>
     extends ProxyFeature<State, Msg, Effect> {
-  /// The observer monitoring the feature.
-  final FeatureObserver<State, Msg, Effect> observer;
+  final OnInit? _onInit;
+  final OnDispose? _onDispose;
+  final OnState<State>? _onState;
+  final OnMsg<Msg>? _onMsg;
+  final OnEffect<Effect>? _onEffect;
 
   final _subscription = CompositeSubscription();
 
@@ -93,31 +105,37 @@ final class FeatureObserverWrapper<State, Msg, Effect>
   /// - [observer]: The observer handling lifecycle and interaction events.
   FeatureObserverWrapper({
     required super.feature,
-    required this.observer,
-  }) {
-    observer.onCreate();
-  }
+    OnInit? onInit,
+    OnDispose? onDispose,
+    OnState<State>? onState,
+    OnMsg<Msg>? onMsg,
+    OnEffect<Effect>? onEffect,
+  })  : _onEffect = onEffect,
+        _onMsg = onMsg,
+        _onState = onState,
+        _onDispose = onDispose,
+        _onInit = onInit;
 
   /// Notifies the observer when a message is accepted.
   @override
   void accept(Msg message) {
-    observer.onMsg(message);
+    _onMsg?.call(message);
     super.accept(message);
   }
 
   /// Initializes the feature and starts observing state and effect streams.
   @override
   FutureOr<void> init() {
-    observer.onInit();
-    stateStream.listen(observer.onState).addTo(_subscription);
-    effects.listen(observer.onEffect).addTo(_subscription);
+    _onInit?.call();
+    stateStream.listen(_onState).addTo(_subscription);
+    effects.listen(_onEffect).addTo(_subscription);
     return super.init();
   }
 
   /// Disposes the feature and cleans up subscriptions.
   @override
   Future<void> dispose() {
-    observer.onDispose();
+    _onDispose?.call();
     _subscription.dispose();
     return super.dispose();
   }
@@ -133,14 +151,43 @@ final class FeatureObserverWrapper<State, Msg, Effect>
 /// ```
 @experimental
 extension FeatureObserverWrapperHelper<S, M, E> on Feature<S, M, E> {
+  /// Wraps the feature with a new [FeatureObserver].
+  ///
+  /// - [onInit]: Called when the feature is initialized.
+  /// - [onDispose]: Called when the feature is disposed.
+  /// - [onState]: Called when the feature's state changes.
+  /// - [onMsg]: Called when a message is accepted by the feature.
+  /// - [onEffect]: Called when an effect is emitted by the feature.
+  ///
+  /// Returns a [FeatureObserverWrapper] that monitors the feature's interactions.
+  Feature<S, M, E> observe({
+    OnInit? onInit,
+    OnDispose? onDispose,
+    OnState<S>? onState,
+    OnMsg<M>? onMsg,
+    OnEffect<E>? onEffect,
+  }) =>
+      FeatureObserverWrapper(
+        feature: this,
+        onInit: onInit,
+        onDispose: onDispose,
+        onState: onState,
+        onMsg: onMsg,
+        onEffect: onEffect,
+      );
+
   /// Wraps the feature with the specified [observer].
   ///
   /// - [observer]: The observer to attach.
   ///
   /// Returns a [FeatureObserverWrapper] that monitors the feature's interactions.
-  Feature<S, M, E> observe(FeatureObserver<S, M, E> observer) =>
+  Feature<S, M, E> observeWith(FeatureObserver<S, M, E> observer) =>
       FeatureObserverWrapper(
         feature: this,
-        observer: observer,
+        onInit: observer.onInit,
+        onDispose: observer.onDispose,
+        onState: observer.onState,
+        onMsg: observer.onMsg,
+        onEffect: observer.onEffect,
       );
 }
