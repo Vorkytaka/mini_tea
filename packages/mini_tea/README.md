@@ -26,11 +26,16 @@ Let's create a simple Counter feature using miniTea.
 
 ### 1. Define the Models
 
-Our state will be an integer, for simplicity.
+First of all – state.
+State is a representation of single source of truth for the feature.
+
+Our state will be an integer, for simplicity, but in real-world applications it can be a complex object.
 
 ```dart
 typedef CounterState = int;
 ```
+
+Next we need to define messages.
 
 Messages represent intentions related to the feature
 It can be a user action like button click, a system event, or any other kind of intention.
